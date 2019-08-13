@@ -27,6 +27,17 @@ class _HomeState extends State<Home> {
       _toDoController.text = "";
       newToDo["ok"] = false;
       _toDoList.add(newToDo);
+      _saveData();
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _readData().then((data){
+      setState(() {
+        _toDoList = json.decode(data);
+      });
     });
   }
 
@@ -54,7 +65,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Todo List"),
+        title: Text("ToDo List"),
         backgroundColor: Colors.blueAccent,
         centerTitle: true,
       ),
