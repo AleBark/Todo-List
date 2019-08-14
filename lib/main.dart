@@ -65,18 +65,20 @@ class _HomeState extends State<Home> {
 
   Future<Null> _refresh() async {
     await Future.delayed(Duration(seconds: 1));
+
     setState(() {
       _toDoList.sort((a, b) {
-        if (a["ok"] && b["ok"]) {
+        if (a["ok"] && !b["ok"])
           return 1;
-        } else if (!a["ok"] && b["ok"]) {
+        else if (!a["ok"] && b["ok"])
           return -1;
-        } else {
+        else
           return 0;
-        }
       });
+
       _saveData();
     });
+
     return null;
   }
 
@@ -108,25 +110,29 @@ class _HomeState extends State<Home> {
           },
         ),
         onDismissed: (direction) {
-          final snack = SnackBar(
-            content: Text("Task \"${_lastRemoved["title"]}\" removed"),
-            action: SnackBarAction(
-                label: "Undo",
-                onPressed: () {
-                  _toDoList.insert(_lastRemovedPosition, _lastRemoved);
-                  _saveData();
-                }),
-            duration: Duration(seconds: 1),
-          );
-          Scaffold.of(context).removeCurrentSnackBar();
-          Scaffold.of(context).showSnackBar(snack);
-
           setState(() {
             _lastRemoved = Map.from(_toDoList[index]);
             _lastRemovedPosition = index;
             _toDoList.removeAt(index);
             _saveData();
           });
+
+          final snack = SnackBar(
+            content: Text("Task \"${_lastRemoved["title"]}\" removed"),
+            action: SnackBarAction(
+                label: "Undo",
+                onPressed: () {
+                  setState(() {
+                    _toDoList.insert(_lastRemovedPosition, _lastRemoved);
+                    _saveData();
+                  });
+                }),
+            duration: Duration(seconds: 1),
+          );
+          Scaffold.of(context).removeCurrentSnackBar();
+          Scaffold.of(context).showSnackBar(snack);
+
+
         });
   }
 
