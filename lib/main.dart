@@ -34,7 +34,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    _readData().then((data){
+    _readData().then((data) {
       setState(() {
         _toDoList = json.decode(data);
       });
@@ -59,6 +59,35 @@ class _HomeState extends State<Home> {
     } catch (e) {
       return null;
     }
+  }
+
+  Widget buildItem(context, index) {
+    return Dismissible(
+        key: Key(DateTime.now().millisecondsSinceEpoch.toString()),
+        background: Container(
+          color: Colors.red,
+          child: Align(
+            // -1 to 1 on x and y
+            alignment: Alignment(-0.9, 0.0),
+            child: Icon(
+              Icons.delete,
+              color: Colors.white,
+            ),
+          ),
+        ),
+        direction: DismissDirection.startToEnd,
+        child: CheckboxListTile(
+          title: Text(_toDoList[index]["title"]),
+          value: _toDoList[index]["ok"],
+          secondary: CircleAvatar(
+            child: Icon(_toDoList[index]["ok"] ? Icons.check : Icons.error),
+          ),
+          onChanged: (checked) {
+            setState(() {
+              _toDoList[index]["ok"] = checked;
+            });
+          },
+        ));
   }
 
   @override
@@ -96,21 +125,7 @@ class _HomeState extends State<Home> {
             child: ListView.builder(
                 padding: EdgeInsets.only(top: 10.0),
                 itemCount: _toDoList.length,
-                itemBuilder: (context, index) {
-                  return CheckboxListTile(
-                    title: Text(_toDoList[index]["title"]),
-                    value: _toDoList[index]["ok"],
-                    secondary: CircleAvatar(
-                      child: Icon(
-                          _toDoList[index]["ok"] ? Icons.check : Icons.error),
-                    ),
-                    onChanged: (checked) {
-                      setState(() {
-                        _toDoList[index]["ok"] = checked;
-                      });
-                    },
-                  );
-                }),
+                itemBuilder: buildItem),
           )
         ],
       ),
